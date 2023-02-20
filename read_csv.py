@@ -60,6 +60,12 @@ for csv_file, wav_file in zip(all_csv_files, all_wav_files):
     # create blank target with the image-shape of our spectrogram
     target = np.zeros_like(spectrogram)
 
+    color_dict = {
+    "hhc": 'b',
+    "hho": 'g',
+    "kd": 'c',
+    "sd": 'w'
+    }
     grey_dict = {
         "hhc": 50,
         "hho": 100,
@@ -67,12 +73,15 @@ for csv_file, wav_file in zip(all_csv_files, all_wav_files):
         "sd": 200
     }
 
-    target = np.zeros_like(spectrogram)
+    #target = np.zeros_like(spectrogram)
     for i, val in enumerate(time_indexes):
-        target[:, val] = grey_dict[df_vals[i]]
+        plt.axvline(x=val,color=color_dict[df_vals[ind]])
+        #target[:, val] = grey_dict[df_vals[i]]
 
+    # save plot as variable
+    plt_as_variable = plt.gcf()
     # append targets to label_list
-    label_list.append(target)
+    label_list.append(plt_as_variable) #target)
 
 ## Save lists as datasets ##
 spec_ds = tf.data.Dataset.from_tensor_slices(spec_list)
