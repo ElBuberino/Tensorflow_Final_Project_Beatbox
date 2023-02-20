@@ -9,6 +9,8 @@ import numpy as np
 from pathlib import Path
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
+import tensorflow as tf
+
 
 # set path
 PATH = "C:/Users/accou/OneDrive/Desktop/Arbeit/Studium/Master/Semester03/IANNwTF/final_project/Personal"
@@ -54,92 +56,24 @@ for csv_file, wav_file in zip(all_csv_files, all_wav_files):
     # append each onset time into times_indexes list
     for i in df_onsets:
         time_indexes.append(np.abs(times - i).argmin())
-"""
-    # create color mapping for each category
-    grey_dict = {
-        "hhc": 0.2,     # high head closed
-        "hho": 0.3,     # high head open
-        "kd": 0.4,      # kick drum
-        "sd": 0.5       # snare drum
-    }
 
     # create blank target with the image-shape of our spectrogram
     target = np.zeros_like(spectrogram)
-    # print onset times on target
+
+    grey_dict = {
+        "hhc": 50,
+        "hho": 100,
+        "kd": 150,
+        "sd": 200
+    }
+
+    target = np.zeros_like(spectrogram)
     for i, val in enumerate(time_indexes):
-        #target[:, val] = grey_dict[df_vals[i]]
-
-        category = df_vals[i]
-
-        color = grey_dict[category]
-
-        target[:, val] = np.repeat(color, spectrogram.shape[0], axis=0)
+        target[:, val] = grey_dict[df_vals[i]]
 
     # append targets to label_list
     label_list.append(target)
-"""
-# create color maps for each category
-hhc_cmap = ListedColormap(['white', 'black', 'grey'], name='hhc')
-hho_cmap = ListedColormap(['white', 'red', 'grey'], name='hho')
-kd_cmap = ListedColormap(['white', 'blue', 'grey'], name='kd')
-sd_cmap = ListedColormap(['white', 'green', 'grey'], name='sd')
 
-# create a dictionary to store the color maps for each category
-cmap_dict = {
-    "hhc": hhc_cmap,
-    "hho": hho_cmap,
-    "kd": kd_cmap,
-    "sd": sd_cmap
-}
-
-# create target with the image-shape of our spectrogram
-target = np.zeros_like(spectrogram)
-
-# iterate through each onset time and corresponding category value
-for i, val in enumerate(time_indexes):
-    category = df_vals[i]
-
-    # get the color map for the category and set the color of the target
-    cmap = cmap_dict[category]
-    color = cmap(0.5)
-
-    # resize the color array to match the shape of the target column
-    color = np.reshape(color, (spectrogram.shape[0]))
-
-    target[:, val] = color
-
-# append targets to label_list
-label_list.append(target)
-
-
-
-## Plot spectrograms and targets as png-images ##
-# create an empty dictionary to store the paths of saved plots
-plot_dict = {}
-
-# set the figure size and dpi for all plots
-fig = plt.figure(figsize=(8, 8), dpi=100)
-
-# iterate through each pair of spectrograms and their corresponding labels
-for idx, (spec, label) in enumerate(zip(spec_list, label_list)):
-    # create a visual representation of the spectrogram using librosa and matplotlib
-    spec_ex = librosa.display.specshow(librosa.power_to_db(spec, ref=np.max))
-    # define a file path to save the spectrogram image using the current index
-    filename_spec = f"test_plots/mel_spectrogram_{idx}.png"
-    # save the current figure using the specified file path and clear the figure
-    plt.savefig(filename_spec)
-    plt.clf()
-    # add the file path of the saved spectrogram to the dictionary using the current index
-    plot_dict[f"spec_{idx}"] = os.path.abspath(filename_spec)
-
-    # create a visual representation of the label using librosa and matplotlib
-    label_ex = librosa.display.specshow(label)
-    # define a file path to save the label image using the current index
-    filename_label = f"test_plots/label_{idx}.png"
-    # save the current figure using the specified file path and clear the figure
-    plt.savefig(filename_label)
-    plt.clf()
-    # add the file path of the saved label to the dictionary using the current index
-    plot_dict[f"label_{idx}"] = os.path.abspath(filename_label)
-
-
+## Save lists as datasets ##
+spec_ds = tf.data.Dataset.from_tensor_slices(spec_list)
+label_ds = tf.data.Dataset.from_tensor_slices(label_list)
