@@ -2,7 +2,7 @@
 ## Audio-Image Segmentation Task of Amateur Vocal Percussion Dataset
 
 ### Group members:
-Niklas Bub (nbub@uni-osnabrueck.de), Tim Bax (tbax@uni-osnabrueck.de), Jasper Oldach
+Niklas Bub (nbub@uni-osnabrueck.de), Tim Bax (tbax@uni-osnabrueck.de), Jasper Oldach (Joldach@uni-osnabrueck.de)
 
 ### Tutors involved with this project: 
 Leon Schmid, Matthis Pink
